@@ -1,91 +1,25 @@
-# BIG-Bench Lite Evaluation of T0
+# Capstone Project (2022-2023)
+Title: Understanding the Zero-Shot Learning Capabilities of Pretrained Language Models
 
-## Part 1 of 4: Setting up the environments
+Recently, the field of natural language processing (NLP) has been galvanized by the seemingly astounding capabilities of large-scale pretrained language models (PLMs) to solve unknown tasks (i.e., zero-shot learning) as long as they can be framed in natural language (e.g., provide the input "Translate the following sentence to German: [sentence]" to a PLM, expect a German translation of [sentence] as output). This approach, also known as "prompting", has generated a number of papers trying to use and better understand it, but most are superficial applications and analyses which do not offer a satisfying explanation for why prompting works and how. In this project, we will thoroughly chart the current landscape of prompting prominent PLMs (e.g., GPT-3, T0) by systematic experiments on standard zero-shot performance benchmarks (e.g., T0 datasets) and aim to develop a new understanding and methods of prompting.
 
-After cloning the repo, first, modify the environment variables on lines 3, 4, 5, 8, 13, 16, 17, 18, and 19 of env_setup.sh to match your directory locations. Then, grant env_setup.sh permissions to execute, which can be done via the chmod command. With those changes made, run env_setup.sh to set up the associated Conda environment. This will create a directory system laid out below. Do not delete these files.
+## BIG-Bench Lite Evaluation of T0
 
-capstone_rst
+In the "big-bench-lite-test" folder, we are evaluating the 3B-parameter T0 model on the BIG-Bench Lite datasets.
+- Current Progress:
+  - 15 out of 17 multiple choice datasets evaluated
+  - 7 out of 7 free-response datasets evaluated 👍
+- In Progress:
+  - Now that I was able to generate my own script and really hone in on how the Sanh et al script works, completing the script and experiment for both of the following should take about an hour or two, plus another hour or two to analyze results.
+  - StrategyQA dataset: Needs its own parser. Work in progress. Not the same format as the rest of BIG-Bench. Maybe contact BIG-Bench administrators about it?
+  - Russian Misconceptions dataset: Our current testing scripts fail for datasets this small. A non-parallelized version is being made.
 
-|_ mc
+To evaluate BIG-Bench Lite, we adapted the Sanh et al script for the multiple-choice (scoring) problems, with minor changes for performance and executability (without changes in results). We then realized that due to the preprocessing Sanh et al employ, their script does not work for the free-response (open-ended) problems. We thus decided to write our own script, drawing inspiration from their model parallelization sample script and the multiple-choice script. Thus, we maintain the same tokenization methods (and in theory the same results) as Sanh et al's scripts.
 
-|_ open
+## Sanh et al Experiment Replication
 
+In the "sanh_replication" folder, we performed a replication of Sanh et al's experiment on the 3B-parameter T0 model, obtaining the same results as in the paper. This experiment was built upon the scripts available on their [GitHub repo](https://github.com/bigscience-workshop/t-zero).
 
+## Parallelformers Experiment
 
-## Part 2 of 4: Running the Multiple Choice Benchmark
-
-Run run_bench_mc.sh
-
-This will create files for the results of the evaluation in JSON files called results.json. There will be one sub-folder in capstone_rst/mc per dataset. The directory system is laid out below. The absence of any of the results.json files indicates that the associated experiment failed. The directory system is laid out below.
-
-capstone_rst
-
-|_ mc
-  
-  |_ dataset #1
-  
-    |_ results.json
-  
-  |_ dataset #2
-  
-    |_ results.json
-  
-  ...
-
-  |_ dataset #17
-
-    |_ results.json
-
-|_ open
-
-
-
-## Part 3 of 4: Running the Free-Response Benchmark
-
-Run run_bench_open.sh
-
-Exact same rules as Part 2 apply here. The new directory system is laid out below.
-
-capstone_rst
-
-|_ mc
-  
-  |_ dataset #1
-  
-    |_ results.json
-  
-  |_ dataset #2
-  
-    |_ results.json
-  
-  ...
-
-  |_ dataset #17
-
-    |_ results.json
-
-|_ open
-  
-  |_ dataset #1
-  
-    |_ results.json
-  
-  |_ dataset #2
-  
-    |_ results.json
-  
-  ...
-
-  |_ dataset #7
-
-    |_ results.json
-
-
-
-## Part 4 of 4: Parsing Results
-
-Run parse_results.py
-
-NOTE: The current version of this file only does the following for the multiple choice results, because those are the only ones that work right now. Nothing on the user side changes from adding the free-response datasets.
-
-This script concatenates all the experiments, the preprocessed data, the model output, and expectation into a file titled "fullResults.csv", and then aggregate figures into a file called "summary.csv". If the above directory structure is unchanged, this should run without issue.
+In the "parallelformers_rte" folder, we performed our own evaluation of RTE using the T0 model. Although we initially had differing results from Sanh et al, we later learned that this was due to the fact that Sanh et al used preprocessing which we did not use.
